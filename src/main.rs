@@ -1,17 +1,20 @@
-use axum::{
-    routing::{ get, post },
-    Router, Json,
-};
-use serde::{ Deserialize, Serialize };
+use axum::Router;
 use std::net::SocketAddr;
 use tokio::net::TcpListener;
+
+mod handlers;
+mod routes;
+mod models;
+
+use handlers::root;
+use routes::{ hello::hello_routes, json::json_routes };
 
 #[tokio::main]
 async fn main() {
     let app = Router::new()
-        .route("/", get(root))
-        .route("/hello", get(hello))
-        .route("/json", post(json_handler));
+        .route("/", axum::routing::get(root::root))
+        .merge(hello_routes())
+        .merge(json_routes());
 
     let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
     println!("Server running at http://{}", addr);
@@ -21,29 +24,4 @@ async fn main() {
     axum::serve(listener, app)
         .await
         .unwrap();
-}
-
-async fn root() -> &'static str {
-    "Welcome to Rust Backend!"
-}
-
-async fn hello() -> &'static str {
-    "Hello World!"
-}
-
-#[derive(Serialize, Deserialize)]
-struct Input {
-    name: String,
-}
-
-#[derive(Serialize)]
-struct Response {
-    message: String,
-}
-
-async fn json_handler(Json(payload): Json<Input>) -> Json<Response> {
-    let response = Response {
-        message: format!("Hello, {}!", payload.name),
-    };
-    Json(response)
 }
