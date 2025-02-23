@@ -1,0 +1,27 @@
+# Target directory (compiled binaries)
+target/
+
+# Build artifacts
+*.rs.bk
+
+# Dependencies
+/.cargo/
+
+# IDE files
+.vscode/
+*.swp
+*.swo
+
+# OS specific files
+.DS_Store
+
+# Logs
+logs/
+*.log
+*.tmp
+
+# Secrets
+.env
+.env.*
+/config/secrets.toml
+
